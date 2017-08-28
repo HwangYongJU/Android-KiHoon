@@ -23,7 +23,7 @@ public class CommunicationManager {
     private Socket socket;
     byte[] buffer = new byte[500];
     byte[] bytes;
-    int gap=1000;
+    int gap=50;
     private InputStream inputStream;
     private OutputStream outputStream = null;
     public boolean Isconnected=false;
@@ -84,9 +84,9 @@ public class CommunicationManager {
                         /*outputStream.write(Data.reqReadFault.toByteArray());
                         Thread.sleep(gap);
                         */outputStream.write(Data.reqReadFuel.toByteArray());
-                        //Thread.sleep(gap);
-                        /*outputStream.write(Data.reqReadOpTime.toByteArray());
-                        Thread.sleep(gap);*/
+                        Thread.sleep(gap);
+                        outputStream.write(Data.reqReadOpTime.toByteArray());
+                        Thread.sleep(gap);
                         /*outputStream.write(Data.reqReadPump.toByteArray());*/
                         Log.d("보낸다, 연결됨?", "" + Isconnected);
                     }
@@ -136,6 +136,7 @@ public class CommunicationManager {
                             if(bytes!=null){
                                 Log.d("됩니다?", "컥");
                                 parsingData.parsingMsg(bytes);
+                                bytes = null;
                             }
                             else
                                 Log.d("receive thread:","byte가 null입니다. ");

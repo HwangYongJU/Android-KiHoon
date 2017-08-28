@@ -108,6 +108,6 @@ public class MainDataProcess implements DataProcessor {
         }
 
         Log.i("메인으로","갔음");
-        CommunicationManager.socketActivity.receiveMsg(processedData);
+        CommunicationManager.socketActivity.receiveMsg(this.processedData);
     }
 }

@@ -362,55 +362,48 @@ public class MainActivity extends AppCompatActivity
     }
     Handler msgHandler = new Handler(){
         public void handleMessage(Message msg){
-            messageDisplay(msg.obj.toString());
+            switch(msg.what){
+                case 1:
+                    totalFuel.setText(((String[])msg.obj)[0]);
+                    performaceFuel.setText(((String[])msg.obj)[1]);
+                    travelFuel.setText(((String[])msg.obj)[2]);
+                    fixFuel.setText(((String[])msg.obj)[3]);
+                    basicFuel.setText(((String[])msg.obj)[4]);
+
+                    break;
+                case 2:
+                    totalTime.setText(((String[])msg.obj)[0]);
+                    performaceTime.setText(((String[])msg.obj)[1]);
+                    travelTime.setText(((String[])msg.obj)[2]);
+                    fixTime.setText(((String[])msg.obj)[3]);
+                    basicTime.setText(((String[])msg.obj)[4]);
+                    break;
+            }
         }
     };
-    public void messageDisplay(String serverMsg){
-        //rcvMsg.setText(""+serverMsg);
-    }
-
-
     @Override
-    public synchronized void receiveMsg(HashMap<Byte, Object> dataSet) {
-        Log.i("여기엔","왓지");
-        Log.i("데이터맵",dataSet.keySet()+"");
+    public void receiveMsg(HashMap<Byte, Object> dataSet) {
+        msg = Message.obtain();
+
         if(dataSet.containsKey(Data.CURRENT_ERROR_INFO)){
             String[][] strings = (String[][]) dataSet.get(Data.CURRENT_ERROR_INFO);
-            for(String[] str:strings){
-                sb.append("오류코드 : " + str[0] + ", 한글 : " + str[1] + ", 영어 : " + str[2] +"\n");
-            }
-            msg = Message.obtain();
-            msg.obj=sb.toString();
-            msgHandler.sendMessage(msg);
+            msg.what = 0;
+            msg.obj=strings;
         }
         else if(dataSet.containsKey(Data.FUEL_USE_INFO)){
             String[] strings = (String[]) dataSet.get(Data.FUEL_USE_INFO);
-
-            totalFuel.setText(strings[0]);
-            performaceFuel.setText(strings[1]);
-            travelFuel.setText(strings[2]);
-            fixFuel.setText(strings[3]);
-            basicFuel.setText(strings[4]);
+            msg.what = 1;
+            msg.obj=strings;
         }
         else if(dataSet.containsKey(Data.OPERATION_TIME)){
             String[] strings = (String[]) dataSet.get(Data.OPERATION_TIME);
-
-            Log.i("뭐지",strings.length+"");
-
-            totalTime.setText(strings[0]);
-            performaceTime.setText(strings[1]);
-            travelTime.setText(strings[2]);
-            fixTime.setText(strings[3]);
-            basicTime.setText(strings[4]);
+            msg.what = 2;
+            msg.obj = strings;
         }
         else if(dataSet.containsKey(Data.ANALOG)){
             String[] strings = (String[]) dataSet.get(Data.ANALOG);
-            for(String str:strings){
-                sb.append("아날로그  : " + str + "\n");
-            }
-            msg = Message.obtain();
-            msg.obj=sb.toString();
-            msgHandler.sendMessage(msg);
         }
+        msgHandler.sendMessage(msg);
+
     }
 }
