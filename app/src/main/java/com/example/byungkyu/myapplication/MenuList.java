@@ -6,15 +6,15 @@ import java.util.ArrayList;
  * Created by USER on 2017-08-16.
  */
 
-public class Menu {
+public class MenuList {
     public String function;
     public ArrayList<String> item = new ArrayList<String>();
 
-    public Menu(String function){
+    public MenuList(String function) {
         this.function = function;
     }
 
-    public String toString(){
+    public String toString() {
         return function;
     }
 }
