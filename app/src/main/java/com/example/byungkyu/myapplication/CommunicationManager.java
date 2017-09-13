@@ -23,7 +23,7 @@ public class CommunicationManager {
     private Socket socket;
     byte[] buffer = new byte[500];
     byte[] bytes;
-    int gap=50;
+    int gap=200;
     private InputStream inputStream;
     private OutputStream outputStream = null;
     public boolean Isconnected=false;
@@ -81,9 +81,9 @@ public class CommunicationManager {
             public void run() {
                 try {
                     if(socketActivity instanceof MainActivity) {
-                        /*outputStream.write(Data.reqReadFault.toByteArray());
+                        outputStream.write(Data.reqReadFault.toByteArray());
                         Thread.sleep(gap);
-                        */outputStream.write(Data.reqReadFuel.toByteArray());
+                        outputStream.write(Data.reqReadFuel.toByteArray());
                         Thread.sleep(gap);
                         outputStream.write(Data.reqReadOpTime.toByteArray());
                         Thread.sleep(gap);
@@ -98,7 +98,7 @@ public class CommunicationManager {
         });
         sendThread.start();
     }
-    public byte[] recvMsg()throws IOException {
+    public synchronized byte[] recvMsg()throws IOException {
         byte sum;
         inputStream.read(buffer);
         byte[] bytes=new byte[buffer[0]];

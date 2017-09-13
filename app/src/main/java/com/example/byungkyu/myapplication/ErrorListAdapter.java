@@ -57,5 +57,6 @@ public class ErrorListAdapter extends BaseAdapter {
         item.setErrorContent(content);
 
         eList.add(item);
+        this.notifyDataSetChanged();
     }
 }

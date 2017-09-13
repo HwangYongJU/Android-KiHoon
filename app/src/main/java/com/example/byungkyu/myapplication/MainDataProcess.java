@@ -62,11 +62,9 @@ public class MainDataProcess implements DataProcessor {
         }
         this.currentErrorInfoParsedData = new String[parsingData.length][3];
 
-        Log.i("보자", DBHelper.ceiMap.keySet()+"");
         //해당 값 투입
         for(int i=0; i<parsingData.length; i++){
             this.currentErrorInfoParsedData[i] = DBHelper.ceiMap.get(parsingData[i][0]+""+parsingData[i][1]);
-            Log.i("FMI", this.currentErrorInfoParsedData[i][0]);
         }
 
         processedData.put(Data.CURRENT_ERROR_INFO,this.currentErrorInfoParsedData);

@@ -45,7 +45,11 @@ public class MainActivity extends AppCompatActivity
     TextView fixFuel;
     TextView basicFuel;
     TextView travelFuel;
-
+    ErrorListAdapter errorListAdapter;
+    static final int CURRENT_ERROR_INFO_ID = 0;
+    static final int FUEL_USE_INFO_ID = 1;
+    static final int OPERATION_TIME_ID = 2;
+    static final int ANALOG_ID = 3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -220,25 +224,7 @@ public class MainActivity extends AppCompatActivity
         basicFuel = (TextView) findViewById(R.id.fuel_basicFuel);
         travelFuel = (TextView) findViewById(R.id.fuel_travelFuel);
 
-        ////////////////////////////////////////////////////////////////////////////
 
-        communicationManager.setSocketActivity(this);
-
-        try{
-            helper.selectCurrentErrorInfo(db);
-            helper.selectAnalog(db);
-            helper.selectFuelUseInfo(db);
-            //helper.selectOperationTime(db);
-            this.process();
-        }
-        catch (Exception e){
-
-        }
-
-
-        ///////////////////////////////////////////////////////////////////////////
-
-        setContentView(R.layout.activity_main);
         final Intent analogActivity = new Intent(this, AnalogActivity.class);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -281,9 +267,31 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         ListView errorList = (ListView) findViewById(R.id.error_listView);
-        ErrorListAdapter errorListAdapter = new ErrorListAdapter();
+        errorListAdapter = new ErrorListAdapter();
         errorList.setAdapter(errorListAdapter);
-        setErrorListData(errorListAdapter);
+
+
+        ////////////////////////////////////////////////////////////////////////////
+
+        communicationManager.setSocketActivity(this);
+
+        try{
+            helper.selectCurrentErrorInfo(db);
+            helper.selectAnalog(db);
+            helper.selectFuelUseInfo(db);
+            //helper.selectOperationTime(db);
+            this.process();
+        }
+        catch (Exception e){
+
+        }
+
+
+        ///////////////////////////////////////////////////////////////////////////
+
+
+
+
     }
 
     @Override
@@ -383,7 +391,13 @@ public class MainActivity extends AppCompatActivity
     Handler msgHandler = new Handler(){
         public void handleMessage(Message msg){
             switch(msg.what){
-                case 1:
+                case CURRENT_ERROR_INFO_ID:
+                    for(String[] str : (String[][])msg.obj){
+                        errorListAdapter.addItem(str[0],str[2]);
+                    }
+                    break;
+
+                case FUEL_USE_INFO_ID:
                     totalFuel.setText(((String[])msg.obj)[0]);
                     performaceFuel.setText(((String[])msg.obj)[1]);
                     travelFuel.setText(((String[])msg.obj)[2]);
@@ -391,7 +405,7 @@ public class MainActivity extends AppCompatActivity
                     basicFuel.setText(((String[])msg.obj)[4]);
 
                     break;
-                case 2:
+                case OPERATION_TIME_ID:
                     totalTime.setText(((String[])msg.obj)[0]);
                     performaceTime.setText(((String[])msg.obj)[1]);
                     travelTime.setText(((String[])msg.obj)[2]);
@@ -404,25 +418,25 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void receiveMsg(HashMap<Byte, Object> dataSet) {
         msg = Message.obtain();
-
         if(dataSet.containsKey(Data.CURRENT_ERROR_INFO)){
             String[][] strings = (String[][]) dataSet.get(Data.CURRENT_ERROR_INFO);
-            msg.what = 0;
-            msg.obj=strings;
+            msg.what = CURRENT_ERROR_INFO_ID;
+            msg.obj = strings;
         }
         else if(dataSet.containsKey(Data.FUEL_USE_INFO)){
             String[] strings = (String[]) dataSet.get(Data.FUEL_USE_INFO);
-            msg.what = 1;
+            msg.what = FUEL_USE_INFO_ID;
             msg.obj=strings;
         }
         else if(dataSet.containsKey(Data.OPERATION_TIME)){
             String[] strings = (String[]) dataSet.get(Data.OPERATION_TIME);
-            msg.what = 2;
+            msg.what = OPERATION_TIME_ID;
             msg.obj = strings;
         }
         else if(dataSet.containsKey(Data.ANALOG)){
             String[] strings = (String[]) dataSet.get(Data.ANALOG);
         }
+
         msgHandler.sendMessage(msg);
 
     }
